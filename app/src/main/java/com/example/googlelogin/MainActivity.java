@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleSignIn";
-    private static final String OAUTH_ID = "453707610368-dhel407uoviko1afcfufiav876ffnvml.apps.googleusercontent.com";
+    private static final String OAUTH_ID = BuildConfig.OAUTH_ID;
 
     private CredentialManager credentialManager;
     private Executor executor;
