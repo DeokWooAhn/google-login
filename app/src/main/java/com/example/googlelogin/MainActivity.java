@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CancellationSignal;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
@@ -19,6 +20,8 @@ import androidx.credentials.exceptions.GetCredentialException;
 
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
+
+import org.json.JSONObject;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("CheckResult")
     private void googleSignIn() {
         GetGoogleIdOption getGoogleIdOption = new GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(true)
+                .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(OAUTH_ID)
                 .setAutoSelectEnabled(true)
 //                .setNonce()
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-
     }
 
     private void handleSignIn(GetCredentialResponse response) {
@@ -93,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
 
                 String email = googleIdTokenCredential.getId();
                 Log.e(TAG, "Google ID " + email);
+
+
+                // 기존 account.getId() 값 token에서 추출
+                try {
+                    String[] tokenParts = idToken.split("\\.");
+                    String payload = new String(Base64.decode(tokenParts[1], Base64.URL_SAFE));
+                    JSONObject jsonPayload = new JSONObject(payload);
+
+                    String googleId = jsonPayload.getString("sub"); // 사용자 고유 ID
+
+                    Log.e(TAG, "Google ID: " + googleId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 Intent intent = new Intent(this, SuccessActivity.class);
                 intent.putExtra("idToken", idToken);
